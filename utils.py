@@ -1,5 +1,7 @@
 import random
 
+timingDelay = 0.35
+
 def randomColor():
     r = random.random()
     g = random.random()

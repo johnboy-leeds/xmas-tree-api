@@ -2,7 +2,7 @@ from gpiozero import SPIDevice, SourceMixin
 from colorzero import Color, Hue
 from statistics import mean
 from time import sleep
-from utils import randomColor
+from utils import randomColor, timingDelay
 import random
 
 class Pixel:
@@ -123,30 +123,43 @@ class RGBXmasTree(SourceMixin, SPIDevice):
     def star(self, color):
         indicies = [3]
         self.setByIndicies(indicies, color)
-        
+
+    def alternateColours(self, color1, color2):
+        values = list(self.value)
+        for x in range(12):
+          values[x * 2] = color1
+          values[(x * 2) + 1] = color2
+          
+        self.value = tuple(values)
+
     def bottomToTop(self, color):
-        delay = 1
         self.off()
         self.bottomRow(color)
-        sleep(delay)
+        sleep(timingDelay)
         self.bottomRow((0,0,0))
         self.middleRow(color)
-        sleep(delay)
+        sleep(timingDelay)
         self.middleRow((0,0,0))
         self.topRow(color)
-        sleep(delay)
+        sleep(timingDelay)
         self.topRow((0,0,0))
         self.star(color)
-        sleep(delay)
+        sleep(timingDelay)
 
     def twinkle(self):
-      for pixel in self:
-        pixel.color = randomColor()
+        for pixel in self:
+            pixel.color = randomColor()
 
-      for x in range(50):
-        pixel = random.choice(self)
-        pixel.color = randomColor()
-        sleep(0.2)
+        for x in range(50):
+            pixel = random.choice(self)
+            pixel.color = randomColor()
+            sleep(timingDelay)
+
+    def hueCycle(self):
+        self.color = Color('red')
+        for x in range(36):
+            self.color += Hue(deg=10)
+            sleep(timingDelay)
 
 if __name__ == '__main__':
     tree = RGBXmasTree()
